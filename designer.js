@@ -4,9 +4,13 @@
 //    HandlebarsTemplate.setWidth('200');
 //    HandlebarsTemplate.setHeight('20');
 
-//    /* Define custom event for your widget */
-//    HandlebarsTemplate.addEvent('myEvent');
-
+    /* Define custom event for your widget */
+	HandlebarsTemplate.addEvent({
+		'name':'onContentAdded',
+		'description':'On Content Added',
+		'category': 'Custom Events'
+	});
+	
 //    /* Customize existing properties */
 //    HandlebarsTemplate.customizeProperty('test', {
 //        sourceTitle: 'Test Source',

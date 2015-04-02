@@ -6,24 +6,12 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
             	var _this = this;
 
                 // datasource
-                var dataSource = WAF.sources[_this.options.datasource],
-                    templateDataContent = dataSource.getAttributeNames().join(',');
-                
-                // load template data
-                dataSource.toArray(templateDataContent, {
-                    onSuccess: function(event){
-                        // add content to element                
-                        _this.templateData = {
-                            entity: event.result
-                        };
-                        // call html renderer function
-                        _this.renderHTML();
-                    }
-                });
+                _this._datasource = WAF.sources[_this.options.datasource];
+                _this._templateDataContent = _this._datasource.getAttributeNames().join(',');
 
                 // load template                
                 var templateFileRequest = new XMLHttpRequest();
-                templateFileRequest.open('GET', '/templates/template.html', true);
+                templateFileRequest.open('GET', _this.templatePath(), true);
                 templateFileRequest.onload = function() {
                     if (templateFileRequest.status >= 200 && templateFileRequest.status < 400) {
                         // get file content
@@ -31,40 +19,54 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
                         // call html renderer function
                         _this.renderHTML();
                     } else {
-                        throw 'reached target server of template file, but it returned an error'
+                        throw 'reached target server of template file, but server returned an error'
                     }
                 };
                 templateFileRequest.onerror = function() {
                     throw 'connection error'
                 };
-
                 templateFileRequest.send();
+
+                // add on collection change listener
+                _this._datasource.addListener('onCollectionChange', function(event) {
+                    _this.makeHandlebarsArray();
+                });
             } catch (e) {
-                console.log(e.message);
+            	console.log(e);
             }
         },
         datasource: widget.property({
     		type: 'datasource',
     		bindable: true
     	}),
-        templateFolder: widget.property({
+        templatePath: widget.property({
     		type: 'string',
-    		defaultValue: '/templates/',
+    		defaultValue: '/path/to/template.html',
     		bindable: false
     	}),
-        templateFile: widget.property({
-    		type: 'string',
-    		defaultValue: 'template.html',
-    		bindable: false
-    	}),
+    	makeHandlebarsArray: function(){
+    	    var _this = this;
+    	    
+             // load template data
+            _this._datasource.toArray(_this._templateDataContent, {
+                onSuccess: function(event){
+                    // add content to element                
+                    _this.templateData = {
+                        entity: event.result
+                    };
+                    // call html renderer function
+                    _this.renderHTML();
+                }
+            });   	    
+    	},
     	renderHTML: function(){
     	    var _this = this,
     	        templateFn;
-    	    
+
     	    // render data
     	    if (_this.templateData && _this.templateSource) {
     	        var templateFn = Handlebars.compile(_this.templateSource);
-    	        
+
     	        // add html to element
     	        _this.node.innerHTML = templateFn(_this.templateData);
     	        // fire complete event

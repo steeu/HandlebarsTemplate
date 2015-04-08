@@ -6,8 +6,8 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
             	var _this = this;
 
                 // datasource
-                _this._datasource = WAF.sources[_this.options.datasource];
-                _this._templateDataContent = _this._datasource.getAttributeNames().join(',');
+                _this._templateDataCollection = WAF.sources[_this.options.datasource];
+                _this._templateDataAttributes = _this._templateDataCollection.getAttributeNames().join(',');
 
                 // load template                
                 var templateFileRequest = new XMLHttpRequest();
@@ -28,14 +28,14 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
                 templateFileRequest.send();
 
                 // add on collection change listener
-                _this._datasource.addListener('onCollectionChange', function(event) {
+                _this._templateDataCollection.addListener('onCollectionChange', function(event) {
                     _this.toHandlebarsArray();
                 });
             } catch (e) {
             	console.log(e);
             }
         },
-        datasource: widget.property({
+        templateDataCollection: widget.property({
     		type: 'datasource',
     		bindable: true
     	}),
@@ -48,7 +48,7 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
     	    var _this = this;
     	    
              // load template data
-            _this._datasource.toArray(_this._templateDataContent, {
+            _this._templateDataCollection.toArray(_this._templateDataAttributes, {
                 onSuccess: function(event){
                     // add content to element                
                     _this.templateData = {
@@ -65,12 +65,22 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
 
     	    // render data
     	    if (_this.templateData && _this.templateSource) {
-    	        var templateFn = Handlebars.compile(_this.templateSource);
+    	        var templateFn = Handlebars.compile(_this.templateSource),
+    	            clickListenerArr;
 
     	        // add html to element
     	        _this.node.innerHTML = templateFn(_this.templateData);
+    	        // add click event
+    	        clickListenerArr = _this.node.getElementsByClassName('click');
+    	        // loop elements
+    	        for (var i = 0; i < clickListenerArr.length; i++) {
+    	            var element = clickListenerArr[i];
+    	            
+    	            // add listener to element
+		            element.addEventListener('click', function() {_this.fire('click', {element: element});}, false);
+	            };
     	        // fire complete event
-    	        _this.fire('onContentAdded');
+    	        _this.fire('render');
     	    }
     	}
     });

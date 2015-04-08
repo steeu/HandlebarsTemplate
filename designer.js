@@ -1,16 +1,20 @@
 (function(HandlebarsTemplate) {
 
-//    /* Default width and height of your widget */
-//    HandlebarsTemplate.setWidth('200');
-//    HandlebarsTemplate.setHeight('20');
+    /* Default width and height of your widget */
+    HandlebarsTemplate.setWidth('400');
+    HandlebarsTemplate.setHeight('400');
 
     /* Define custom event for your widget */
 	HandlebarsTemplate.addEvent({
-		'name':'onContentAdded',
-		'description':'On Content Added',
+		'name':'click',
+		'description':'Click',
+		'category': 'Custom Events'
+	});	
+	HandlebarsTemplate.addEvent({
+		'name':'render',
+		'description':'Render',
 		'category': 'Custom Events'
 	});
-	
 //    /* Customize existing properties */
 //    HandlebarsTemplate.customizeProperty('test', {
 //        sourceTitle: 'Test Source',

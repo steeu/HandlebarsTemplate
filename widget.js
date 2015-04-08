@@ -17,7 +17,7 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
                         // get file content
                         _this.templateSource = templateFileRequest.responseText;
                         // call html renderer function
-                        _this.renderHTML();
+                        _this.render();
                     } else {
                         throw 'reached target server of template file, but server returned an error'
                     }
@@ -29,7 +29,7 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
 
                 // add on collection change listener
                 _this._datasource.addListener('onCollectionChange', function(event) {
-                    _this.makeHandlebarsArray();
+                    _this.toHandlebarsArray();
                 });
             } catch (e) {
             	console.log(e);
@@ -44,7 +44,7 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
     		defaultValue: '/path/to/template.html',
     		bindable: false
     	}),
-    	makeHandlebarsArray: function(){
+    	toHandlebarsArray: function(){
     	    var _this = this;
     	    
              // load template data
@@ -55,11 +55,11 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
                         entity: event.result
                     };
                     // call html renderer function
-                    _this.renderHTML();
+                    _this.render();
                 }
             });   	    
     	},
-    	renderHTML: function(){
+    	render: function(){
     	    var _this = this,
     	        templateFn;
 

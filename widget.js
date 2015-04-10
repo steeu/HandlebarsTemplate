@@ -5,10 +5,16 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
             try {
             	var _this = this;
 
-                // datasource
-                _this._templateDataCollection = WAF.sources[_this.options.datasource];
-                _this._templateDataAttributes = _this._templateDataCollection.getAttributeNames().join(',');
-
+                // validate datasource
+                if (_this.templateDataCollection()) {
+                    // datasource
+                    _this._templateDataCollection = WAF.sources[_this.options.datasource];
+                    _this._templateDataAttributes = _this._templateDataCollection.getAttributeNames().join(',');
+                    // add on collection change listener
+                    _this._templateDataCollection.addListener('onCollectionChange', function(event) {
+                        _this.toHandlebarsArray();
+                    });
+                }
                 // load template                
                 var templateFileRequest = new XMLHttpRequest();
                 templateFileRequest.open('GET', _this.templatePath(), true);
@@ -26,11 +32,6 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
                     throw 'connection error'
                 };
                 templateFileRequest.send();
-
-                // add on collection change listener
-                _this._templateDataCollection.addListener('onCollectionChange', function(event) {
-                    _this.toHandlebarsArray();
-                });
             } catch (e) {
             	console.log(e);
             }
@@ -57,12 +58,22 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
                     // call html renderer function
                     _this.render();
                 }
-            });   	    
+            });
+    	},
+    	setHandlebarsArray: function(value){
+    	    var _this = this;
+    	    
+            // add content to element                
+            _this.templateData = {
+                entity: value
+            };
+            // call html renderer function
+            _this.render();
     	},
     	render: function(){
     	    var _this = this,
     	        templateFn;
-
+           
     	    // render data
     	    if (_this.templateData && _this.templateSource) {
     	        var templateFn = Handlebars.compile(_this.templateSource),

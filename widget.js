@@ -8,10 +8,9 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
                 // validate datasource
                 if (_this.templateDataCollection()) {
                     // datasource
-                    _this._templateDataCollection = WAF.sources[_this.options.datasource];
-                    _this._templateDataAttributes = _this._templateDataCollection.getAttributeNames().join(',');
+                    _this.templateDataAttributes = _this.templateDataCollection().getAttributeNames().join(',');
                     // add on collection change listener
-                    _this._templateDataCollection.addListener('onCollectionChange', function(event) {
+                    _this.templateDataCollection().addListener('onCollectionChange', function(event) {
                         _this.toHandlebarsArray();
                     });
                 }
@@ -37,8 +36,7 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
             }
         },
         templateDataCollection: widget.property({
-    		type: 'datasource',
-    		bindable: true
+    		type: 'datasource'
     	}),
         templatePath: widget.property({
     		type: 'string',
@@ -49,11 +47,11 @@ WAF.define('HandlebarsTemplate', ['waf-core/widget'], function(widget) {
     	    var _this = this;
     	    
              // load template data
-            _this._templateDataCollection.toArray(_this._templateDataAttributes, {
+            _this.templateDataCollection().toArray(_this.templateDataAttributes, {
                 onSuccess: function(event){
                     // add content to element                
                     _this.templateData = {
-                        entity: event.result
+                        items: event.result
                     };
                     // call html renderer function
                     _this.render();

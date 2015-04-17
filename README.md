@@ -7,6 +7,15 @@ This widget has the following properties:
 * __templatePath__: Path to HTML template
 * __templateDataCollection__: Template data source
 
+### Sample Template
+```html
+<ul>
+{{#each items}}
+  <li>{{name}}</li>
+{{/each}}
+</ul>
+```
+
 ### Templates
 Please visit the [Handlebars website](http://handlebarsjs.com/) for further information.
 
